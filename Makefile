@@ -10,12 +10,18 @@ cflags=-std=gnu++11 -fpermissive -fno-exceptions -ffunction-sections -fdata-sect
 avrflags=-DARDUINO=10807 -DARDUINO_AVR_FEATHER32U4 -DARDUINO_ARCH_AVR -DUSB_VID=0x239A -DUSB_PID=0x800C "-DUSB_MANUFACTURER=\"Adafruit\"" "-DUSB_PRODUCT=\"Feather 32u4\""
 
 CORE_FILES := $(shell find core -type f -name "*.cpp" -o -name "*.c")
-SRC_FILES=$(shell find src/ -type f -name "*.cpp" -o -name "*.c")
+32u4_FILES=$(shell find src/32u4/ -type f -name "*.cpp" -o -name "*.c")
+CLIENT_FILES=$(shell find src/client/ -type f -name "*.cpp" -o -name "*.c")
 
-all: objects move_obj
+CLIENT_CXXSTD := -std=c++11 -Wno-deprecated-register -g -O0
+
+all: objects move_obj main.elf main.hex
+
+client:
+	g++ $(CLIENT_CXXSTD) -Iinc/ $(CLIENT_FILES) -o bin/client
 
 objects:
-	avr-gcc $(cflags) $(avrflags) -c $(CORE_FILES) $(SRC_FILES)
+	avr-gcc $(cflags) $(avrflags) -c $(CORE_FILES) $(32u4_FILES)
 
 move_obj:
 	mv *.o obj/
